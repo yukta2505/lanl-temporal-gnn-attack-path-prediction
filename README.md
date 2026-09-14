@@ -1,82 +1,183 @@
----
-title: THGNN Threat Detection
-emoji: 🛡️
-colorFrom: blue
-colorTo: red
-sdk: streamlit
-sdk_version: 1.37.1
-app_file: app.py
-pinned: false
----
+# 🛡️ THGNN – Lateral Movement Detection
 
-# THGNN - Temporal Heterogeneous Graph Neural Network for Cybersecurity Threat Detection
+### Temporal Heterogeneous Graph Neural Network for Cybersecurity Threat Detection
 
-[![Hugging Face Spaces](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-Spaces-blue)](https://huggingface.co/spaces/AkshayHole/Thgnn-Threat-Detection)
+## 📌 Overview
 
-## Overview
+THGNN (Temporal Heterogeneous Graph Neural Network) is a cybersecurity
+threat detection system designed to analyze security events and identify
+potential lateral movement and attack activity.
 
-THGNN is an advanced cybersecurity threat detection system that uses Temporal Heterogeneous Graph Neural Networks to predict and analyze potential cyber threats in real-time.
+The system models relationships between different entities such as
+users, hosts, processes, files, and registry objects over time using a
+temporal heterogeneous graph.
 
-### Key Features
+## 🎯 Objectives
 
-- **Real-time Threat Prediction**: Analyze security logs and predict future attack steps
-- **Multi-step Attack Forecasting**: Forecast attack chains up to 5 steps ahead
-- **Interactive Visualizations**: Network graphs, timelines, and heatmaps
-- **MITRE ATT&CK Mapping**: Automatic mapping to MITRE ATT&CK framework
-- **Comprehensive Reporting**: Executive summaries and technical analysis
+- Detect suspicious lateral movement activity.
+- Analyze relationships between entities in security logs.
+- Predict potential future attack steps.
+- Map detected activities to MITRE ATT&CK techniques.
+- Provide visual and understandable security analysis.
 
-### Performance Metrics
+## ✨ Key Features
 
-- **AUC-ROC**: 92.6%
-- **Precision@10**: 78%
-- **Prediction Latency**: <5 seconds
-- **Processing Speed**: 100K+ events/minute
+- 🔍 Threat detection and prediction
+- 🔗 Multi-step attack forecasting
+- 📊 Interactive network graph visualization
+- 🛡️ MITRE ATT&CK technique mapping
+- 🧠 Temporal heterogeneous graph modeling
+- 📑 Technical and executive reporting
+- 🔎 Model explainability
 
-## How to Use
+## 🧠 How It Works
 
-1. **Upload Security Logs**: Upload your security logs (JSON, JSONL, CSV, or ZIP formats)
-2. **Generate Predictions**: Analyze threats and generate risk-scored predictions
-3. **Explore Visualizations**: View interactive network graphs and attack chains
-4. **Forecast Future Attacks**: Multi-step attack path prediction
-5. **Generate Reports**: Create executive summaries and technical reports
+```text
+Security Logs
+      ↓
+Data Ingestion
+      ↓
+Graph Construction
+      ↓
+Temporal Heterogeneous Graph
+      ↓
+THGNN Model
+      ↓
+Threat / Attack Prediction
+      ↓
+Explainability
+      ↓
+Interactive Visualization
+      ↓
+Security Reports
 
-## Technical Stack
+## 🏗️ System Architecture
 
-- **Framework**: PyTorch 2.0+, PyTorch Geometric 2.3+
-- **Frontend**: Streamlit
-- **Visualization**: Plotly, NetworkX
-- **ML Architecture**: Heterogeneous GCN with LSTM temporal encoding
+The THGNN system consists of multiple components that work together
+to process security events, construct a temporal heterogeneous graph,
+detect potential threats, and present the results for analysis.
 
-## Architecture
+The main components are:
 
-The system processes security logs through the following pipeline:
+- **Data Ingestion** – Collects and processes security event data.
+- **Data Preprocessing** – Cleans and prepares the input data.
+- **Graph Construction** – Represents security entities and their
+  relationships as a heterogeneous graph.
+- **Temporal Modeling** – Captures changes in entity relationships
+  over time.
+- **THGNN Model** – Analyzes the graph to identify suspicious
+  activity and predict potential attack steps.
+- **Explainability** – Helps understand the factors contributing
+  to model predictions.
+- **Visualization** – Displays security events, relationships,
+  and attack paths.
+- **Reporting** – Provides security analysis and prediction results.
 
-1. **Data Ingestion**: Parse security logs (Windows Event, Sysmon, custom JSON)
-2. **Graph Construction**: Build temporal heterogeneous graphs (users, hosts, processes)
-3. **ML Inference**: Predict future attack steps using GNN-based link prediction
-4. **Explainability**: Generate explanations with GNNExplainer
-5. **Visualization**: Display attack chains in interactive dashboard
 
-## Model Details
+## 🛠️ Technology Stack
 
-- **Hidden Dimension**: 256
-- **Convolution Layers**: 3
-- **Temporal Encoding**: Bidirectional LSTM
-- **Node Types**: Users, Hosts, Processes, Files, Registry
-- **Edge Types**: logs_into, executes, creates, connects_to, accesses, modifies
+| Category | Technology |
+|---|---|
+| Programming Language | Python |
+| Deep Learning | PyTorch |
+| Graph Learning | PyTorch Geometric |
+| Dashboard | Streamlit |
+| Visualization | Plotly |
+| Graph Processing | NetworkX |
+| Temporal Modeling | LSTM |
+| Explainability | GNNExplainer |
+| Containerization | Docker |
 
-## Citation
 
-If you use this system in your research, please cite:
+## 🧩 Model Details
 
-```
-THGNN: Temporal Heterogeneous Graph Neural Network for Cybersecurity Threat Detection
-```
+### Node Types
 
-## License
+The graph represents different cybersecurity entities, including:
 
-MIT License
+- Users
+- Hosts
+- Processes
+- Files
+- Registry objects
 
-## Contact
+### Relationship Types
 
-For questions or issues, please open an issue on the repository.
+The system models relationships such as:
+
+- `logs_into`
+- `executes`
+- `creates`
+- `connects_to`
+- `accesses`
+- `modifies`
+
+### Model Components
+
+- Heterogeneous graph representation
+- Graph neural network layers
+- Temporal encoding
+- Bidirectional LSTM
+- Threat prediction
+- Explainability using GNNExplainer
+
+## 📊 Performance Results
+
+The current project reports the following performance metrics:
+
+| Metric | Result |
+|---|---:|
+| AUC-ROC | 92.6% |
+| Precision@10 | 78% |
+| Prediction Latency | < 5 seconds |
+| Processing Speed | 100K+ events/minute |
+
+## 📂 Project Structure
+
+```text
+THGNN-Lateral-Movement-Detection/
+│
+├── app/
+├── config/
+├── docs/
+├── documentation/
+├── notebooks/
+├── scripts/
+├── src/
+├── tests/
+│
+├── .gitignore
+├── Dockerfile
+├── docker-compose.yml
+├── environment.yml
+├── requirements.txt
+├── README.md
+├── THGNN_Project_Documentation.txt
+└── THGNN_Project_Report.md
+
+## ⚙️ Installation
+
+### 1. Clone the Repository
+git clone https://github.com/123shraddha555/THGNN-Lateral-Movement-Detection.git
+
+### 2. Navigate to the Project Directory
+cd THGNN-Lateral-Movement-Detection
+
+pip install -r requirements.txt
+
+## 🛡️ MITRE ATT&CK Mapping
+
+- **T1078 – Valid Accounts**
+
+
+## 🚀 Future Scope
+
+- Improve real-time threat detection.
+- Support more MITRE ATT&CK techniques.
+- Enhance model accuracy and scalability.
+
+## 👤 Author
+
+**Shraddha Ghaytadkar**
+
+GitHub: https://github.com/123shraddha555
