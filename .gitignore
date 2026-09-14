@@ -1,0 +1,75 @@
+# Data directories (CRITICAL - Large files)
+./Security-Datasets
+data/raw/
+data/raw/**
+data/metadata/
+data/metadata/**
+temp/
+temp/uploads/
+temp/**
+outputs/
+outputs/**
+
+# Model checkpoints
+*.pth
+checkpoints/
+best_*.pth
+
+backup/
+submission/
+# Logs
+*.log
+logs/
+graph_builder.log
+app/graph_builder.log
+notebooks/notebook_training.log
+
+# Python cache
+__pycache__/
+*/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.pytest_cache/
+
+xmega.pdf
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+xmega/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Agent documentation files (untracked)
+agent/
+agent/*.md
+
+# Jupyter
+.ipynb_checkpoints
+notebooks/.ipynb_checkpoints
+*.ipynb
+
+# Config secrets
+config/secrets.yaml
+*.env
+.env.local
+
+# Demo/test files
+demo.jsonl
+demo_final.json
+script.py
+
+# Docker
+.dockerignore

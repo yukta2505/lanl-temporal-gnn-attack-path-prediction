@@ -1,0 +1,238 @@
+# Field Mappings Configuration for Universal Log Parser
+# Maps log format fields to normalized schema fields
+
+windows_event:
+  timestamp:
+    - "TimeCreated"
+    - "@timestamp"
+    - "timestamp"
+  event_id:
+    - "EventID"
+  source_host:
+    - "Computer"
+    - "ComputerName"
+  source_user:
+    - "SubjectUserName"
+    - "TargetUserName"
+    - "User"
+    - "AccountName"
+  source_process:
+    - "ProcessName"
+    - "NewProcessName"
+    - "ImageFileName"
+  source_pid:
+    - "ProcessId"
+    - "NewProcessId"
+  target_user:
+    - "TargetUserName"
+    - "AccountName"
+  target_process:
+    - "TargetProcessName"
+  command_line:
+    - "CommandLine"
+    - "ProcessCommandLine"
+  parent_process:
+    - "ParentProcessName"
+  parent_pid:
+    - "ParentProcessId"
+  file_path:
+    - "ObjectName"
+    - "FileName"
+  registry_key:
+    - "ObjectName"
+  network_src_ip:
+    - "SourceAddress"
+    - "IpAddress"
+  network_dst_ip:
+    - "DestAddress"
+  network_dst_port:
+    - "DestPort"
+    - "Port"
+
+sysmon:
+  timestamp:
+    - "UtcTime"
+    - "@timestamp"
+    - "timestamp"
+  event_id:
+    - "EventID"
+  source_host:
+    - "Computer"
+    - "ComputerName"
+  source_user:
+    - "User"
+  source_process:
+    - "Image"
+    - "ProcessName"
+  source_pid:
+    - "ProcessId"
+  target_process:
+    - "TargetImage"
+  target_pid:
+    - "TargetProcessId"
+  network_src_ip:
+    - "SourceIp"
+  network_dst_ip:
+    - "DestinationIp"
+  network_dst_port:
+    - "DestinationPort"
+  file_path:
+    - "TargetFilename"
+    - "ImageLoaded"
+  registry_key:
+    - "TargetObject"
+  command_line:
+    - "CommandLine"
+  parent_process:
+    - "ParentImage"
+  parent_pid:
+    - "ParentProcessId"
+
+linux_audit:
+  timestamp:
+    - "@timestamp"
+    - "timestamp"
+  event_type:
+    - "type"
+  source_host:
+    - "hostname"
+    - "host"
+  source_user:
+    - "uid"
+    - "auid"
+    - "user"
+  source_process:
+    - "exe"
+    - "comm"
+  source_pid:
+    - "pid"
+  file_path:
+    - "name"
+    - "path"
+  command_line:
+    - "proctitle"
+    - "a0"
+    - "a1"
+    - "a2"
+    - "a3"
+
+custom_json:
+  timestamp:
+    - "timestamp"
+    - "@timestamp"
+    - "time"
+    - "event_time"
+    - "datetime"
+  event_type:
+    - "event_type"
+    - "type"
+    - "action"
+    - "activity"
+  source_host:
+    - "host"
+    - "hostname"
+    - "computer"
+    - "source_host"
+    - "src_host"
+  source_user:
+    - "user"
+    - "username"
+    - "account"
+    - "source_user"
+    - "src_user"
+  source_process:
+    - "process"
+    - "process_name"
+    - "image"
+    - "source_process"
+    - "executable"
+  source_pid:
+    - "pid"
+    - "process_id"
+    - "source_pid"
+  target_host:
+    - "target_host"
+    - "destination_host"
+    - "dest_host"
+    - "dst_host"
+  target_user:
+    - "target_user"
+    - "destination_user"
+    - "dest_user"
+    - "dst_user"
+  target_process:
+    - "target_process"
+    - "destination_process"
+    - "dest_process"
+  target_pid:
+    - "target_pid"
+    - "destination_pid"
+    - "dest_pid"
+  network_src_ip:
+    - "src_ip"
+    - "source_ip"
+    - "source_address"
+    - "srcip"
+  network_dst_ip:
+    - "dst_ip"
+    - "dest_ip"
+    - "destination_ip"
+    - "destination_address"
+    - "dstip"
+  network_dst_port:
+    - "dst_port"
+    - "dest_port"
+    - "destination_port"
+    - "dstport"
+    - "port"
+  file_path:
+    - "file"
+    - "filename"
+    - "file_path"
+    - "path"
+    - "filepath"
+  registry_key:
+    - "registry_key"
+    - "reg_key"
+    - "key"
+    - "regkey"
+  command_line:
+    - "command_line"
+    - "cmdline"
+    - "command"
+    - "cmd"
+  parent_process:
+    - "parent_process"
+    - "parent_image"
+    - "ppname"
+  parent_pid:
+    - "parent_pid"
+    - "ppid"
+
+# Custom field variations for specific vendors/products
+# Add more mappings as needed for specific log sources
+splunk:
+  timestamp:
+    - "_time"
+    - "timestamp"
+  source_host:
+    - "host"
+    - "src"
+  source_user:
+    - "user"
+    - "src_user"
+  target_host:
+    - "dest"
+    - "dst"
+
+elastic:
+  timestamp:
+    - "@timestamp"
+  source_host:
+    - "host.name"
+    - "agent.hostname"
+  source_user:
+    - "user.name"
+  source_process:
+    - "process.name"
+    - "process.executable"
