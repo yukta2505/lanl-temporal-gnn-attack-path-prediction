@@ -1,18 +1,6 @@
-"""
-THGNN Model Package
+"""Synopsis-specific static and temporal host-pair models."""
 
-Production-ready Temporal Heterogeneous Graph Neural Network components
-for cybersecurity threat detection and lateral movement prediction.
-"""
+from .static_e_graphsage import StaticEGraphSAGE
+from .temporal_attack_model import TemporalAttackPathModel
 
-from .hetero_conv import HeteroGNNLayer
-from .temporal_encoder import TemporalEncoder
-from .link_predictor import LinkPredictor
-from .thgnn_model import THGNN
-
-__all__ = [
-    'HeteroGNNLayer',
-    'TemporalEncoder', 
-    'LinkPredictor',
-    'THGNN'
-]
+__all__ = ["StaticEGraphSAGE", "TemporalAttackPathModel"]

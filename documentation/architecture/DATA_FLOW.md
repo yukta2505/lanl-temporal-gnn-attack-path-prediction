@@ -1,82 +1,35 @@
-# Data Flow Architecture
-## THGNN End-to-End Pipeline
+# Data flow for next-hop prediction
 
-**Document Version:** 1.0.0  
-**Last Updated:** February 9, 2026
-
----
-
-## Table of Contents
-
-1. [Pipeline Overview](#pipeline-overview)
-2. [Stage 1: Log Ingestion](#stage-1-log-ingestion)
-3. [Stage 2: Data Processing](#stage-2-data-processing)
-4. [Stage 3: Graph Construction](#stage-3-graph-construction)
-5. [Stage 4: Model Inference](#stage-4-model-inference)
-6. [Stage 5: Explainability](#stage-5-explainability)
-7. [Stage 6: Visualization](#stage-6-visualization)
-8. [Data Formats](#data-formats)
-9. [Error Handling](#error-handling)
-
----
-
-## Pipeline Overview
-
-The THGNN system processes security data through six distinct stages, transforming raw logs into actionable threat intelligence.
-
-### High-Level Flow
-
-```
-Raw Logs → Parsing → Entity Extraction → Graph Building → 
-ML Inference → Explanation → Visualization → Alerts
+```mermaid
+sequenceDiagram
+    participant A as LANL auth archive
+    participant R as LANL red-team archive
+    participant P as Streaming preprocessor
+    participant X as XGBoost baseline
+    participant I as Prediction exporter
+    participant D as Analyst dashboard
+    participant C as Asset inventory CSV
+    A->>P: Chronological authentication events
+    R->>P: Malicious edge labels
+    P->>P: Update prior-window host and pair aggregates
+    P->>P: Write positive and sampled negative candidate pairs
+    P->>X: Candidate JSONL
+    X->>I: Trained model bundle
+    P->>I: Candidate feature rows
+    I->>D: Probability and feature-contribution CSV
+    C->>D: Host criticality values
 ```
 
-### Processing Time Budget
+## Feature/label separation
 
-| Stage | Target Time | Max Time |
-|-------|-------------|----------|
-| Log Ingestion | 0.1s | 0.3s |
-| Data Processing | 0.3s | 0.5s |
-| Graph Construction | 0.4s | 0.6s |
-| Model Inference | 1.0s | 1.5s |
-| Explainability | 0.3s | 0.5s |
-| Visualization | 0.2s | 0.3s |
-| **Total** | **2.3s** | **3.7s** |
+For each prediction window, feature aggregates come from events in earlier
+windows. Red-team edges in the prediction window supply positive labels. The
+source host must have appeared in earlier red-team activity to enter the
+current candidate set. Negative destinations are sampled from hosts already
+observed in the event stream.
 
----
-
-## Stage 1: Log Ingestion
-
-### Input Sources
-
-**File Upload**:
-```
-User → Streamlit UI → File Upload → Temp Storage
-```
-
-**API Submission**:
-```
-External System → REST API → Validation → Queue
-```
-
-**Stream Ingestion**:
-```
-SIEM → WebSocket → Buffer → Processing Queue
-```
-
-### Supported Formats
-
-- Windows Event Logs (EVTX, JSON)
-- Sysmon Logs (XML, JSON)
-- Custom JSON/JSONL
-- CSV with security fields
-- Splunk/Elastic exports
-
-### Validation Steps
-
-1. **Format Detection**: Identify log format
-2. **Schema Validation**: Check required fields
-3. **Size Check**: Ensure within limits (< 100MB)
-4. **Encoding Verification**: UTF-8 validation
-5. **Malware Scan**: Optional virus check
-
+The graph-model flow is incomplete: graph snapshots and a training pipeline
+are still required. The example builder saves output offsets and aggregate
+state together after each completed window. On resume it truncates uncommitted
+output rows and skips completed windows; compressed input must be reread from
+the start to reach that checkpoint.

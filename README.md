@@ -1,183 +1,96 @@
-# 🛡️ THGNN – Lateral Movement Detection
+# Temporal Graph Learning for Lateral-Movement Prediction
 
-### Temporal Heterogeneous Graph Neural Network for Cybersecurity Threat Detection
+This repository is being adapted to the project synopsis: predict likely next
+host-to-host lateral-movement steps from LANL authentication activity, explain
+candidate predictions, and rank alerts using supplied asset criticality.
 
-## 📌 Overview
+## Current progress
 
-THGNN (Temporal Heterogeneous Graph Neural Network) is a cybersecurity
-threat detection system designed to analyze security events and identify
-potential lateral movement and attack activity.
+- Added LANL auth/red-team parsing and time-windowed event import.
+- Successfully generated a three-day windowed import from the local archives.
+- That import contains 48,889,242 auth events across 145 windows and produced
+  an 11.8 GB JSONL inspection file under `data/processed/`.
+- Added a streaming, disk-backed next-hop example generator with per-window
+  checkpoints. The local 15-day output is not verified complete and needs to
+  be checked or rebuilt before baseline training on that sample.
+- Added a chronological XGBoost baseline trainer, metrics, and batched
+  prediction export with local feature-contribution explanations.
+- Trained the baseline once on the existing three-day example file and
+  generated a prediction CSV. This is a pipeline check, not a valid final
+  evaluation: validation had only five positives and the test split had none.
+- Added reusable static E-GraphSAGE and GraphSAGE+GRU model components, edge
+  occlusion, multi-hop path assembly, risk scoring, and a CSV-based dashboard.
+- Removed the cloned generic upload/forecast/simulation application, legacy
+  model-serving stack, duplicated app dependencies, and old prototype test
+  scripts. Kept synopsis-related graph construction and explainability code
+  for integration work.
+- The 15-day example file is not verified complete. The static and temporal
+  GNN training pipelines, FastAPI service, and React/Cytoscape dashboard remain
+  to be implemented. Streamlit is currently a CSV review prototype.
 
-The system models relationships between different entities such as
-users, hosts, processes, files, and registry objects over time using a
-temporal heterogeneous graph.
+The synopsis mentions both authentication and network-flow logs. The current
+local pipeline uses authentication events and red-team labels only; no flow
+archive is included in the current run.
 
-## 🎯 Objectives
+The local `auth.txt.gz` and `redteam.txt.gz` files are excluded from Git.
+Generated files under `data/processed/` and model outputs are also ignored.
 
-- Detect suspicious lateral movement activity.
-- Analyze relationships between entities in security logs.
-- Predict potential future attack steps.
-- Map detected activities to MITRE ATT&CK techniques.
-- Provide visual and understandable security analysis.
+## Install the project dependencies
 
-## ✨ Key Features
+In PowerShell from the repository root:
 
-- 🔍 Threat detection and prediction
-- 🔗 Multi-step attack forecasting
-- 📊 Interactive network graph visualization
-- 🛡️ MITRE ATT&CK technique mapping
-- 🧠 Temporal heterogeneous graph modeling
-- 📑 Technical and executive reporting
-- 🔎 Model explainability
+```powershell
+python -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+```
 
-## 🧠 How It Works
+## Build the LANL candidate examples
 
-```text
-Security Logs
-      ↓
-Data Ingestion
-      ↓
-Graph Construction
-      ↓
-Temporal Heterogeneous Graph
-      ↓
-THGNN Model
-      ↓
-Threat / Attack Prediction
-      ↓
-Explainability
-      ↓
-Interactive Visualization
-      ↓
-Security Reports
+The following command reads the compressed archives directly, keeping history
+in a persistent SQLite checkpoint and writing sampled candidate pairs. It may
+take substantial time because the auth archive is processed sequentially.
+Do not train on the existing 15-day output unless its build has completed.
 
-## 🏗️ System Architecture
+```powershell
+python -m src.data_processing.lanl_examples `
+  --auth data/auth.txt.gz `
+  --redteam data/redteam.txt.gz `
+  --output data/processed/next_hop_examples_15d.jsonl `
+  --days 15 `
+  --window-minutes 15
+```
 
-The THGNN system consists of multiple components that work together
-to process security events, construct a temporal heterogeneous graph,
-detect potential threats, and present the results for analysis.
+If interrupted, resume with the same paths and options plus `--resume`. Gzip
+input is reread from the beginning because it cannot seek to the checkpoint;
+completed windows and their output rows are reused. The default checkpoint is
+`data/processed/next_hop_examples_15d.jsonl.state/`.
 
-The main components are:
+The separate `src.data_processing.lanl_dataset` command writes complete
+windowed event records for inspection. The example generator does not require
+that large intermediate file. LANL timestamps are relative seconds from the
+recording start.
 
-- **Data Ingestion** – Collects and processes security event data.
-- **Data Preprocessing** – Cleans and prepares the input data.
-- **Graph Construction** – Represents security entities and their
-  relationships as a heterogeneous graph.
-- **Temporal Modeling** – Captures changes in entity relationships
-  over time.
-- **THGNN Model** – Analyzes the graph to identify suspicious
-  activity and predict potential attack steps.
-- **Explainability** – Helps understand the factors contributing
-  to model predictions.
-- **Visualization** – Displays security events, relationships,
-  and attack paths.
-- **Reporting** – Provides security analysis and prediction results.
+## Train, score, and review
 
+```powershell
+python scripts/train_xgboost.py --input data/processed/next_hop_examples_15d.jsonl
+python scripts/predict_next_hops.py --input data/processed/next_hop_examples_15d.jsonl
+streamlit run app/risk_dashboard.py
+```
 
-## 🛠️ Technology Stack
+For an initial baseline run, the existing three-day examples can be used with
+`--input data/processed/next_hop_examples_3d.jsonl`; its sparse positive labels
+make the resulting metrics unsuitable as final results.
 
-| Category | Technology |
-|---|---|
-| Programming Language | Python |
-| Deep Learning | PyTorch |
-| Graph Learning | PyTorch Geometric |
-| Dashboard | Streamlit |
-| Visualization | Plotly |
-| Graph Processing | NetworkX |
-| Temporal Modeling | LSTM |
-| Explainability | GNNExplainer |
-| Containerization | Docker |
+The dashboard takes the prediction CSV and a reviewed asset inventory CSV with
+`host,criticality` columns. Criticality must be on a 0–5 scale. The score is
+`100 × probability × criticality / 5`; missing criticality remains unranked.
 
+## Project documentation
 
-## 🧩 Model Details
-
-### Node Types
-
-The graph represents different cybersecurity entities, including:
-
-- Users
-- Hosts
-- Processes
-- Files
-- Registry objects
-
-### Relationship Types
-
-The system models relationships such as:
-
-- `logs_into`
-- `executes`
-- `creates`
-- `connects_to`
-- `accesses`
-- `modifies`
-
-### Model Components
-
-- Heterogeneous graph representation
-- Graph neural network layers
-- Temporal encoding
-- Bidirectional LSTM
-- Threat prediction
-- Explainability using GNNExplainer
-
-## 📊 Performance Results
-
-The current project reports the following performance metrics:
-
-| Metric | Result |
-|---|---:|
-| AUC-ROC | 92.6% |
-| Precision@10 | 78% |
-| Prediction Latency | < 5 seconds |
-| Processing Speed | 100K+ events/minute |
-
-## 📂 Project Structure
-
-```text
-THGNN-Lateral-Movement-Detection/
-│
-├── app/
-├── config/
-├── docs/
-├── documentation/
-├── notebooks/
-├── scripts/
-├── src/
-├── tests/
-│
-├── .gitignore
-├── Dockerfile
-├── docker-compose.yml
-├── environment.yml
-├── requirements.txt
-├── README.md
-├── THGNN_Project_Documentation.txt
-└── THGNN_Project_Report.md
-
-## ⚙️ Installation
-
-### 1. Clone the Repository
-git clone https://github.com/123shraddha555/THGNN-Lateral-Movement-Detection.git
-
-### 2. Navigate to the Project Directory
-cd THGNN-Lateral-Movement-Detection
-
-pip install -r requirements.txt
-
-## 🛡️ MITRE ATT&CK Mapping
-
-- **T1078 – Valid Accounts**
-
-
-## 🚀 Future Scope
-
-- Improve real-time threat detection.
-- Support more MITRE ATT&CK techniques.
-- Enhance model accuracy and scalability.
-
-## 👤 Author
-
-**Shraddha Ghaytadkar**
-
-GitHub: https://github.com/123shraddha555
+- [Project report](THGNN_Project_Report.md): synopsis scope, implementation
+  status, evaluation plan, and unreported results.
+- [Alignment and remaining work](docs/PROJECT_ALIGNMENT.md): maps the synopsis
+  to the repository and identifies unfinished deliverables.
+- [Documentation index](documentation/README.md): project-specific guides and
+  technical notes.

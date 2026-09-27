@@ -2,6 +2,9 @@
 ./Security-Datasets
 data/raw/
 data/raw/**
+data/*.gz
+data/processed/
+data/processed/**
 data/metadata/
 data/metadata/**
 temp/
@@ -70,6 +73,3 @@ config/secrets.yaml
 demo.jsonl
 demo_final.json
 script.py
-
-# Docker
-.dockerignore
