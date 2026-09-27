@@ -13,5 +13,6 @@ This index covers the current synopsis scope only.
 | Remaining synopsis work | [Project alignment](../docs/PROJECT_ALIGNMENT.md) |
 | Formal report | [Project report](../THGNN_Project_Report.md) |
 
-Model metrics remain pending until a complete chronological experiment has
-been run. Historical prototype performance claims are not project results.
+The XGBoost baseline has an initial completed 15-day chronological result.
+Static/temporal GNN comparisons and path-level results remain pending.
+Historical prototype performance claims are not project results.

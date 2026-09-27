@@ -34,8 +34,14 @@ time. Do not train on a partial output file. This baseline's candidates are
 conditioned on prior red-team compromise labels; it is not yet a live model
 that accepts an arbitrary analyst-selected host.
 
+The completed local 15-day run generated 10,122 candidates. Its chronological
+test split contains 53 positive examples. The exported `predictions_15d.csv`
+scores all windows, including training windows, so use `metrics.json` for
+holdout metrics rather than treating the full CSV as test-only output.
+
 ## Limits
 
-The dashboard consumes CSVs rather than calling a trained model. Prediction
-scores and explanations have not yet been evaluated on the completed 15-day
-sample. Asset criticality is an external inventory value, not a LANL label.
+The dashboard consumes CSVs rather than calling a trained model. XGBoost
+contribution explanations were exported, but have not had a separate
+explanation-quality evaluation. Asset criticality is an external inventory
+value, not a LANL label.

@@ -8,7 +8,7 @@ Once the complete LANL example JSONL has been built, run:
 python scripts/train_xgboost.py --input data/processed/next_hop_examples_15d.jsonl --output-dir outputs/xgboost
 ```
 
-The trainer uses chronological train, validation, and test splits and writes the model bundle and `metrics.json`. Check positive-label counts in every split before interpreting metrics. The existing three-day trial had only five validation positives and no test positives, so it is not a valid performance result.
+The trainer uses chronological train, validation, and test splits and writes the model bundle and `metrics.json`. Check positive-label counts in every split before interpreting metrics. The completed 15-day run had 482 positives overall and 53 test positives; the initial XGBoost test PR-AUC was 0.600 and F1 was 0.589. This is a baseline for the current red-team-conditioned, sampled-candidate task.
 
 ## Export candidate predictions
 

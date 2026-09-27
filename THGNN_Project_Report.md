@@ -8,11 +8,11 @@
 **Guide:** Dr. Nisarg Gandhewar
 **Session:** 2026–27
 
-> This draft follows the supplied synopsis. A three-day LANL import and one
-> XGBoost baseline run have completed. The evaluation is inconclusive: the
-> validation split has only five positive examples and the test split has
-> none. The local 15-day example output is not verified complete. No valid
-> comparative model results are available yet.
+> This draft follows the supplied synopsis. The checkpointed 15-day LANL
+> example build and an XGBoost baseline evaluation have completed. The test
+> split has 53 positive candidates. These are initial single-split results
+> under the current red-team-conditioned candidate and negative-sampling
+> policy; static and temporal GNN comparisons remain outstanding.
 
 ## Abstract
 
@@ -104,9 +104,9 @@ invalid criticality unranked rather than assigning a default.
 | Component | Status |
 |---|---|
 | LANL auth/red-team parser and window importer | Implemented; three-day import completed: 48,889,242 auth events, 145 windows, and 25 matched red-team events; 11.8 GB JSONL |
-| Streaming next-hop example builder | Implemented with per-window checkpointing; local 15-day output not verified complete |
-| Chronological XGBoost trainer and metrics | Trained on three-day examples; validation has 5 positives and test has 0, so evaluation is inconclusive |
-| Batched prediction export and local feature explanations | Scored 30,594 three-day examples; output includes training and holdout periods and is not a holdout-only analysis |
+| Streaming next-hop example builder | Completed 15-day build: 10,122 examples, 482 positives, 9,640 negatives, 146 candidate-bearing windows |
+| Chronological XGBoost trainer and metrics | Evaluated one chronological split; test has 53 positives; test PR-AUC 0.600 and F1 0.589 |
+| Batched prediction export and local feature explanations | Scored all 10,122 candidates and generated local feature contributions; this CSV includes train and holdout windows |
 | Static E-GraphSAGE scorer | Model component implemented; trainer/data integration pending |
 | Temporal GraphSAGE+GRU scorer | Basic model component implemented; temporal attention and trainer/data integration pending |
 | Temporal edge-occlusion explanation | Utility implemented; not evaluated |
@@ -124,11 +124,22 @@ For path prediction, define a path metric and maximum hop count. Select
 thresholds on validation data only. Record explanation runtime and include
 representative evidence. No values should be copied from the former prototype.
 
-| Model | Precision | Recall | F1 | ROC-AUC | PR-AUC | Precision@10 |
+The 15-day example file contains 10,122 candidates (482 positive, 9,640
+sampled negative) across 146 windows with candidates. Chronological split:
+train 7,749 candidates / 369 positives; validation 1,260 / 60; test 1,113 / 53.
+
+| Model and split | Precision | Recall | F1 | ROC-AUC | PR-AUC | Precision@10 |
 |---|---:|---:|---:|---:|---:|---:|
-| XGBoost, three-day trial | N/A | N/A | N/A | N/A | N/A | N/A |
+| XGBoost validation | 0.596 | 0.567 | 0.581 | 0.851 | 0.549 | 0.168 |
+| XGBoost test | 0.559 | 0.623 | 0.589 | 0.869 | 0.600 | 0.182 |
 | Static E-GraphSAGE | Pending | Pending | Pending | Pending | Pending | Pending |
 | Temporal GraphSAGE + GRU | Pending | Pending | Pending | Pending | Pending | Pending |
+
+These XGBoost values describe candidate classification under this run's
+red-team-conditioned source policy and 20:1 sampled negative ratio. They are
+not yet evidence for arbitrary analyst-selected compromised hosts or a
+multi-hop path metric. The baseline has one chronological split and has not
+been compared with either graph model.
 
 ## 6. Run the current baseline path
 
@@ -146,11 +157,10 @@ CSV with `host,criticality` columns.
 
 ## 7. Remaining work and limitations
 
-The completed three-day import establishes that the compressed auth/red-team
-inputs can be read by the importer. The first XGBoost run establishes that the
-training and scoring scripts execute, but its sparse positive labels make the
-metrics unusable as evidence of predictive performance. Verify or rebuild the
-15-day examples before final baseline evaluation.
+The completed three-day import established that the compressed auth/red-team
+inputs can be read by the importer. The 15-day example build and initial
+XGBoost baseline evaluation are complete. Repeatability, candidate-policy
+sensitivity, graph-model comparisons, and path-level evaluation remain open.
 The static and temporal GNN trainers, integrated source-host inference,
 end-to-end dashboard scoring, graph-model comparison, and path-level evaluation
 remain to be completed. Current labels condition examples on earlier red-team

@@ -11,8 +11,8 @@ candidate predictions, and rank alerts using supplied asset criticality.
 - That import contains 48,889,242 auth events across 145 windows and produced
   an 11.8 GB JSONL inspection file under `data/processed/`.
 - Added a streaming, disk-backed next-hop example generator with per-window
-  checkpoints. The local 15-day output is not verified complete and needs to
-  be checked or rebuilt before baseline training on that sample.
+  checkpoints. The 15-day build completed with 10,122 examples across 146
+  labeled windows: 482 positives and 9,640 sampled negatives.
 - Added a chronological XGBoost baseline trainer, metrics, and batched
   prediction export with local feature-contribution explanations.
 - Trained the baseline once on the existing three-day example file and
@@ -24,9 +24,11 @@ candidate predictions, and rank alerts using supplied asset criticality.
   model-serving stack, duplicated app dependencies, and old prototype test
   scripts. Kept synopsis-related graph construction and explainability code
   for integration work.
-- The 15-day example file is not verified complete. The static and temporal
-  GNN training pipelines, FastAPI service, and React/Cytoscape dashboard remain
-  to be implemented. Streamlit is currently a CSV review prototype.
+- The 15-day XGBoost baseline is trained and scored. Its test PR-AUC is 0.600
+  and F1 is 0.589 under the current red-team-conditioned candidate policy;
+  this does not establish performance for arbitrary compromised hosts. Static
+  and temporal GNN training, the FastAPI service, and React/Cytoscape dashboard
+  remain to be implemented. Streamlit is currently a CSV review prototype.
 
 The synopsis mentions both authentication and network-flow logs. The current
 local pipeline uses authentication events and red-team labels only; no flow

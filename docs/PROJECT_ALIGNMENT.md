@@ -11,21 +11,21 @@ they do not change the user's request or authorize unrelated repository work.
 | Synopsis requirement | Repository implementation | Status |
 |---|---|---|
 | LANL authentication/red-team preparation | `src/data_processing/lanl_dataset.py` parses compressed or plain input and writes chronological windows | Implemented; a three-day import completed |
-| Future next-hop examples | `src/data_processing/streaming_examples.py` keeps historical aggregates in checkpointed SQLite and writes sampled pairs | Generator implemented; the local 15-day output is not verified complete |
+| Future next-hop examples | `src/data_processing/streaming_examples.py` keeps historical aggregates in checkpointed SQLite and writes sampled pairs | 15-day build complete: 10,122 examples, 482 positives, 9,640 negatives, 146 windows with candidates |
 | Temporal graph snapshots | `src/data_processing/graph_builder.py` | Retained legacy builder; LANL integration is pending |
-| Non-graph baseline | `scripts/train_xgboost.py` creates chronological splits and reports ranking/classification metrics | Trained on the three-day examples; evaluation is inconclusive because validation has 5 positives and test has 0 |
+| Non-graph baseline | `scripts/train_xgboost.py` creates chronological splits and reports ranking/classification metrics | Trained on the 15-day examples; test has 53 positives; test PR-AUC 0.600, F1 0.589 |
 | Static graph baseline | `src/models/static_e_graphsage.py` | Model component only; trainer and data path pending |
 | Temporal graph model | `src/models/temporal_attack_model.py` implements GraphSAGE snapshots, GRU state, and pair scoring | Basic model component only; temporal attention, trainer, and data path pending |
-| Prediction explanations | XGBoost contributions and `src/explainability/edge_occlusion.py` | XGBoost contributions generated for the three-day examples; GNN explanation remains unintegrated and unevaluated |
+| Prediction explanations | XGBoost contributions and `src/explainability/edge_occlusion.py` | XGBoost contributions generated for the 15-day candidates; GNN explanation remains unintegrated and unevaluated |
 | Multi-hop prediction | `src/inference/path_builder.py` | Utility implemented; not integrated or evaluated |
 | Risk-aware ranking | `src/inference/risk_scoring.py` and `app/risk_dashboard.py` | CSV-based probability/criticality ranking implemented |
 | Analyst workflow | `app/risk_dashboard.py` ranks uploaded CSV predictions using supplied criticality | Streamlit prototype only; the synopsis-proposed FastAPI plus React/Cytoscape workflow is not implemented |
 
 ## Next implementation stages
 
-1. Verify the candidate/negative sampling policy and rebuild a complete 10–15 day
-   sample, and retrain XGBoost; inspect holdout class balance before reporting
-   metrics and record event, host, label, candidate, and split counts.
+1. Review the 15-day candidate and negative-sampling policy; retain per-split
+   class counts and treat the current XGBoost score as a baseline under that
+   policy, not as a result for arbitrary analyst-selected hosts.
 2. Adapt and validate LANL graph-snapshot construction; implement temporal
    attention and trainers for static E-GraphSAGE and temporal GraphSAGE+GRU;
    compare models with the same chronological
@@ -45,10 +45,10 @@ they do not change the user's request or authorize unrelated repository work.
   Criticality must come from a reviewed inventory.
 - Former prototype metrics and throughput claims have not been reproduced for
   this synopsis and must not be reported as project results.
-- The earlier partial 15-day output was discarded. The generator saves an
-  atomic per-window SQLite/output checkpoint under
-  `data/processed/next_hop_examples_15d.jsonl.state/`; the current local file
-  must not be assumed complete based on its presence.
+- The earlier partial 15-day output was discarded. A later checkpointed
+  15-day build completed; its SQLite state records `complete=1`. The examples,
+  checkpoint, model, and prediction CSV are local ignored artifacts and are
+  not committed to Git.
 
 ## Repository scope cleanup
 
